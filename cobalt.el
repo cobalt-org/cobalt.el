@@ -49,14 +49,23 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
   (interactive "sWhat is the title of the post? ")
   (when (not cobalt--current-site)
     (cobalt-change-current-site))
-  (let* ((default-directory cobalt--current-site)
-	 (posts-directory "posts/"))
+  (let ((default-directory cobalt--current-site)
+	 (posts-directory "posts/")
+	 (post-file-name (cobalt--convert-title-to-file-name post-title)))
     (apply 'start-process "cobalt-new-post" cobalt-log-buffer-name
 	   (executable-find "cobalt")
 	   (list "new" "-f" posts-directory post-title))
-    (if (not (file-exists-p (concat posts-directory post-title ".md")))
-	(message "Could not open %s." (concat posts-directory post-title ".md"))
-      (find-file (concat posts-directory post-title ".md")))))
+    (if (not (file-exists-p (concat posts-directory post-file-name ".md")))
+	(message "Could not open %s." (concat posts-directory post-file-name ".md"))
+      (find-file (concat posts-directory post-file-name ".md")))))
+
+(defun cobalt--convert-title-to-file-name (post-title)
+  "Convert the given POST-TITLE to a file name."
+  (downcase (replace-regexp-in-string "--+"
+				     "-"
+				     (replace-regexp-in-string "[^A-Za-z0-9]"
+							       "-"
+							       post-title))))
 
 (provide 'cobalt)
 ;;; cobalt.el ends here
