@@ -50,12 +50,12 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
   (when (not cobalt--current-site)
     (cobalt-change-current-site))
   (let* ((default-directory cobalt--current-site)
-	 (posts-directory "posts/")
-	 (new-command-string (concat (executable-find "cobalt") " new -f " posts-directory " " post-title)))
-    (message "the command is %s" new-command-string)
-    ;;(message "Returned: %s" (shell-command-to-string new-command-string))
-    (shell-command new-command-string cobalt-log-buffer-name cobalt-log-buffer-name)
-    (when (file-exists-p (concat posts-directory post-title ".md"))
+	 (posts-directory "posts/"))
+    (apply 'start-process "cobalt-new-post" cobalt-log-buffer-name
+	   (executable-find "cobalt")
+	   (list "new" "-f" posts-directory post-title))
+    (if (not (file-exists-p (concat posts-directory post-title ".md")))
+	(message "Could not open %s." (concat posts-directory post-title ".md"))
       (find-file (concat posts-directory post-title ".md")))))
 
 (provide 'cobalt)
