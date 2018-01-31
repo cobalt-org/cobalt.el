@@ -61,11 +61,13 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
 
 (defun cobalt--convert-title-to-file-name (post-title)
   "Convert the given POST-TITLE to a file name."
-  (downcase (replace-regexp-in-string "--+"
-				     "-"
-				     (replace-regexp-in-string "[^A-Za-z0-9]"
+  (downcase (replace-regexp-in-string "^-\\|-$"
+				      ""
+				      (replace-regexp-in-string "--+"
 							       "-"
-							       post-title))))
+							       (replace-regexp-in-string "[^A-Za-z0-9]"
+											 "-"
+											 post-title)))))
 
 (provide 'cobalt)
 ;;; cobalt.el ends here
