@@ -1,8 +1,9 @@
-language: generic
+language: rust
 sudo: false
 before_install:
   - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
   - evm install $EVM_EMACS --use --skip
+  - cargo install --force --git https://github.com/cobalt-org/cobalt.rs.git
   - cask
 env:
   - EVM_EMACS=emacs-24.1-travis
