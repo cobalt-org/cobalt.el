@@ -3,7 +3,11 @@
 ;;; Commentary:
 ;;; Code:
 
-(defvar cobalt-site-paths '("~/blogs/accidentalrebel.github.com/" "~/blogs/karlolicudine-blog/")
+;;; Todo:
+;; - Add a way to specify if draft or not for cobalt-serve
+;; - Create a cobalt-command function
+
+(defvar cobalt-site-paths '("~/blogs/accidentalrebel.github.com/" "~/blogs/testblog/")
   "List of site of the user.")
 
 (defvar cobalt-log-buffer-name "*cobalt*"
@@ -25,6 +29,7 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
     (message "Server killed for %s" cobalt--current-site))
   (when (and cobalt-site-paths (> (length cobalt-site-paths) 0) )
     (setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t))))
+
 
 (defun cobalt-serve ()
   "Build, serve, and watch the project at the source dir."
