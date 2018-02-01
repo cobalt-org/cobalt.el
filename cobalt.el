@@ -34,22 +34,39 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
     (when (not cobalt--current-site)
       (cobalt-change-current-site))
     (let* ((default-directory cobalt--current-site))
-      (setq cobalt--serve-process (start-process "cobalt-serve" cobalt-log-buffer-name (executable-find "cobalt") "serve"))
-      (when (not cobalt--serve-process)
-	(message "Error in running: cobalt serve")))))
+      (setq cobalt--serve-process (start-process "cobalt-serve" cobalt-log-buffer-name (executable-find "cobalt") "serve" "--drafts"))
+      (if (not cobalt--serve-process)
+	  (message "Error in running: cobalt serve")
+	(message "Serve process is now running.")))))
 
 (defun cobalt-serve-kill ()
   "Kill the cobalt serve process, if existing."
   (interactive)
   (when cobalt--serve-process
-    (kill-process cobalt--serve-process)
-    (setq cobalt--serve-process nil)))
+    (kill-process cobalt--serve-process))
+  (setq cobalt--serve-process nil))
 
 (defun cobalt-new-post (post-title)
   "Ask for POST-TITLE and create a new post."
   (interactive "sWhat is the title of the post? ")
-  (cobalt--new-post-with-title post-title t)
-  )
+  (cobalt--new-post-with-title post-title t))
+
+(defun cobalt-preview-current-post ()
+  "Opens the current buffer."
+  (interactive)
+  (if (not cobalt--serve-process)
+      (message "No serve process is currently running! Call cobalt-serve first!")
+    (let* ((post-path (concat (car (butlast (split-string (buffer-name) "\\."))) ".html"))
+	   (full-url (concat "http://127.0.0.1:3000/posts/" post-path)))
+      (message "Previewing post: %s" full-url)
+      (browse-url full-url))))
+
+(defun cobalt-preview-site ()
+  "Preview the site."
+  (interactive)
+  (if (not cobalt--serve-process)
+      (message "No serve process is currently running! Call cobalt-serve first!")
+    (browse-url "http://127.0.0.1:3000")))
 
 (defun cobalt--new-post-with-title (post-title open-file-on-success)
   "Create a new post with POST-TITLE."
@@ -62,8 +79,7 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
     (when open-file-on-success
       (if (not (file-exists-p (concat default-directory posts-directory post-file-name ".md")))
 	  (message "Could not find file: %s." (concat default-directory posts-directory post-file-name ".md"))
-	(find-file (concat default-directory posts-directory post-file-name ".md")))))
-  )
+	(find-file (concat default-directory posts-directory post-file-name ".md"))))))
 
 (defun cobalt--convert-title-to-file-name (post-title)
   "Convert the given POST-TITLE to a file name."
