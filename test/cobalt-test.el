@@ -35,7 +35,7 @@
 
      (let* ((cobalt-site-paths (list test-blog-path))
 	    (cobalt--current-site (car cobalt-site-paths)))
-       (cobalt--new-post-with-title "This is a test")
+       (cobalt--new-post-with-title "This is a test" nil)
        (should (f-exists? (concat test-blog-path "posts/this-is-a-test.md"))))
      )
    ))

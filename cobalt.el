@@ -48,23 +48,21 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
 (defun cobalt-new-post (post-title)
   "Ask for POST-TITLE and create a new post."
   (interactive "sWhat is the title of the post? ")
-  (cobalt--new-post-with-title post-title)
+  (cobalt--new-post-with-title post-title t)
   )
 
-(defun cobalt--new-post-with-title (post-title)
+(defun cobalt--new-post-with-title (post-title open-file-on-success)
   "Create a new post with POST-TITLE."
   (when (not cobalt--current-site)
     (cobalt-change-current-site))
   (let ((default-directory cobalt--current-site)
 	(posts-directory "posts/")
 	(post-file-name (cobalt--convert-title-to-file-name post-title)))
-    (apply 'start-process "cobalt-new-post" cobalt-log-buffer-name
-	   (executable-find "cobalt")
-	   (list "new" "-f" posts-directory post-title))
-    (sit-for 5)
-    (if (not (file-exists-p (concat default-directory posts-directory post-file-name ".md")))
-	(message "Could not find file: %s." (concat default-directory posts-directory post-file-name ".md"))
-      (find-file (concat default-directory posts-directory post-file-name ".md"))))
+    (apply 'call-process (executable-find "cobalt") nil cobalt-log-buffer-name nil (list "new" "-f" posts-directory post-title))
+    (when open-file-on-success
+      (if (not (file-exists-p (concat default-directory posts-directory post-file-name ".md")))
+	  (message "Could not find file: %s." (concat default-directory posts-directory post-file-name ".md"))
+	(find-file (concat default-directory posts-directory post-file-name ".md")))))
   )
 
 (defun cobalt--convert-title-to-file-name (post-title)
