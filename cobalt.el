@@ -1,9 +1,13 @@
 ;;; cobalt.el --- Summary   -*- lexical-binding: t -*-
 ;;; Commentary:
+;; 
 ;;; Code:
 
 ;;; Todo:
+;; - Should check if the system has cobalt installed.
 ;; - Create a cobalt-command function
+;; - Only preview a buffer if it is a valid post.
+;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
 
 (defvar cobalt-site-paths '("~/blogs/accidentalrebel.github.com/" "~/blogs/testblog/")
@@ -28,7 +32,6 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
   (when (and cobalt-site-paths (> (length cobalt-site-paths) 0) )
     (setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t))))
 
-
 (defun cobalt-serve (arg)
   "Build, serve, and watch the project at the source dir.
 Specify a prefix argument (c-u) as ARG to also include drafts."
@@ -48,6 +51,12 @@ Specify a prefix argument (c-u) as ARG to also include drafts."
       (if (not cobalt--serve-process)
 	  (message "Error in running: cobalt serve")
 	(message "Serve process is now running.")))))
+
+(defun cobalt-build ()
+  "Builds the current site."
+  (interactive)
+  (let ((default-directory cobalt--current-site))
+    (call-process (executable-find "cobalt") nil cobalt-log-buffer-name nil "build")))
 
 (defun cobalt-serve-kill ()
   "Kill the cobalt serve process, if existing."
