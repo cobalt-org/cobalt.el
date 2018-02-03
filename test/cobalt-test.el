@@ -3,6 +3,9 @@
 ;;; Commentary:
 ;; These are the tests for `cobalt'
 
+;;; Todo:
+;; - Create a test for cobalt-serve without prefix argument
+
 ;;; Code:
 (require 'f)
 
@@ -19,7 +22,7 @@
        (f-mkdir test-blog-path))
      
      (should-not cobalt--serve-process)
-     (cobalt-serve)
+     (cobalt-serve '(4))
      (should cobalt--serve-process)
      (cobalt-serve-kill)
      (should-not cobalt--serve-process))))

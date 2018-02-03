@@ -4,8 +4,8 @@
 ;;; Code:
 
 ;;; Todo:
-;; - Add a way to specify if draft or not for cobalt-serve
 ;; - Create a cobalt-command function
+;; - If start-process returns an error don't let it set cobalt--serve-process
 
 (defvar cobalt-site-paths '("~/blogs/accidentalrebel.github.com/" "~/blogs/testblog/")
   "List of site of the user.")
@@ -31,15 +31,21 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
     (setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t))))
 
 
-(defun cobalt-serve ()
+(defun cobalt-serve (arg)
   "Build, serve, and watch the project at the source dir."
-  (interactive)
+  (interactive "P")
   (if cobalt--serve-process
       (message "Serve process already running!")
     (when (not cobalt--current-site)
       (cobalt-change-current-site))
     (let* ((default-directory cobalt--current-site))
-      (setq cobalt--serve-process (start-process "cobalt-serve" cobalt-log-buffer-name (executable-find "cobalt") "serve" "--drafts"))
+      (setq cobalt--serve-process (start-process "cobalt-serve"
+						 cobalt-log-buffer-name
+						 (executable-find "cobalt")
+						 "serve"
+						 (if (equal arg '(4))
+						     "--drafts"
+						   "--no-drafts")))
       (if (not cobalt--serve-process)
 	  (message "Error in running: cobalt serve")
 	(message "Serve process is now running.")))))
