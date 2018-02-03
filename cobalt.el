@@ -21,7 +21,6 @@
 
 (defun cobalt-change-current-site ()
   "Show a selection to switch current site.
-
 Kills an exiting server process.  User should run cobalt-serve again for the newly switch site."
   (interactive)
   (when cobalt--serve-process
@@ -32,7 +31,8 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
 
 
 (defun cobalt-serve (arg)
-  "Build, serve, and watch the project at the source dir."
+  "Build, serve, and watch the project at the source dir.
+Specify a prefix argument (c-u) as ARG to also include drafts."
   (interactive "P")
   (if cobalt--serve-process
       (message "Serve process already running!")
@@ -80,7 +80,8 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
     (browse-url "http://127.0.0.1:3000")))
 
 (defun cobalt--new-post-with-title (post-title open-file-on-success)
-  "Create a new post with POST-TITLE."
+  "Create a new post with POST-TITLE.
+Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if successful."
   (when (not cobalt--current-site)
     (cobalt-change-current-site))
   (let ((default-directory cobalt--current-site)
