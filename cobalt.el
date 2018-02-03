@@ -34,7 +34,7 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
 
 (defun cobalt-serve (arg)
   "Build, serve, and watch the project at the source dir.
-Specify a prefix argument (c-u) as ARG to also include drafts."
+Specify a prefix argument (c-u) as ARG to include drafts."
   (interactive "P")
   (if cobalt--serve-process
       (message "Serve process already running!")
@@ -52,11 +52,19 @@ Specify a prefix argument (c-u) as ARG to also include drafts."
 	  (message "Error in running: cobalt serve")
 	(message "Serve process is now running.")))))
 
-(defun cobalt-build ()
-  "Builds the current site."
-  (interactive)
+(defun cobalt-build (arg)
+  "Builds the current site.
+Specify a prefix argument (c-u) as ARG to include drafts."
+  (interactive "P")
   (let ((default-directory cobalt--current-site))
-    (call-process (executable-find "cobalt") nil cobalt-log-buffer-name nil "build")))
+    (call-process (executable-find "cobalt")
+		  nil
+		  cobalt-log-buffer-name
+		  nil
+		  "build"
+		  (if (equal arg '(4))
+		      "--drafts"
+		    "--no-drafts"))))
 
 (defun cobalt-serve-kill ()
   "Kill the cobalt serve process, if existing."
