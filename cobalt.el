@@ -1,5 +1,4 @@
-;;; cobalt.el --- Summary
-;;; -*- lexical-binding: t -*-
+;;; cobalt.el --- Summary   -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
