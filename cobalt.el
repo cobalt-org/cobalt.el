@@ -4,7 +4,6 @@
 ;;; Code:
 
 ;;; Todo:
-;; - Create a cobalt-command function
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
@@ -20,6 +19,20 @@
 
 (defvar cobalt--current-site nil
   "The current site.")
+
+(defun cobalt-comand (args)
+  "Run specified cobalt command with ARGS at the current folder of the specified site."
+  (interactive "scobalt ")
+  (when (cobalt--executable-exists-p)
+    (when (not cobalt--current-site)
+      (cobalt-change-current-site))
+    (let ((command-args (split-string args " ")))
+      (apply 'call-process (executable-find "cobalt")
+			   nil
+			   cobalt-log-buffer-name
+			   nil
+			   command-args))
+    (pop-to-buffer cobalt-log-buffer-name)))
 
 (defun cobalt-change-current-site ()
   "Show a selection to switch current site.
