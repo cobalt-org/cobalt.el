@@ -4,21 +4,27 @@
 ;;; Code:
 
 ;;; Todo:
+;; - Create a function to log package messages to cobalt-log-buffer-name.
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
+;; - Should be able to set which port to serve from.
 
-(defvar cobalt-site-paths '("~/blogs/accidentalrebel.github.com/" "~/blogs/testblog/")
-  "List of site of the user.")
+(defcustom cobalt-site-paths nil
+  "List of sites."
+  :group 'cobalt
+  :type 'sexp)
 
-(defvar cobalt-log-buffer-name "*cobalt*"
-  "Name of the log buffer for cobalt process output.")
+(defcustom cobalt-log-buffer-name "*cobalt*"
+  "Name of the log buffer for cobalt process output."
+  :group 'cobalt
+  :type 'string)
 
 (defvar cobalt--serve-process nil
   "Use to save cobalt serve process is so it can be killed in the future.")
 
 (defvar cobalt--current-site nil
-  "The current site.")
+  "The current site to run cobalt commands on.")
 
 (defun cobalt-comand (args)
   "Run specified cobalt command with ARGS at the current folder of the specified site."
@@ -42,8 +48,9 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
     (when cobalt--serve-process
       (cobalt-serve-kill)
       (message "Server killed for %s" cobalt--current-site))
-    (when (and cobalt-site-paths (> (length cobalt-site-paths) 0) )
-      (setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t)))))
+    (if (and cobalt-site-paths (> (length cobalt-site-paths) 0) )
+	(setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t))
+      (message "cobalt-site-paths is empty! Set it first."))))
 
 (defun cobalt-serve (arg)
   "Build, serve, and watch the project at the source dir.
