@@ -4,11 +4,11 @@
 ;;; Code:
 
 ;;; Todo:
-;; - Create a function to log package messages to cobalt-log-buffer-name.
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
 ;; - Should be able to set which port to serve from.
+;; - Fix error with cobalt-build when cobalt--current-site is nil.
 
 (defcustom cobalt-site-paths nil
   "List of sites."
@@ -47,10 +47,10 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
   (when (cobalt--executable-exists-p)
     (when cobalt--serve-process
       (cobalt-serve-kill)
-      (message "Server killed for %s" cobalt--current-site))
+      (cobalt--log (concat "Server killed for " cobalt--current-site)))
     (if (and cobalt-site-paths (> (length cobalt-site-paths) 0) )
 	(setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t))
-      (message "cobalt-site-paths is empty! Set it first."))))
+      (cobalt--log "cobalt-site-paths is empty! Set it first."))))
 
 (defun cobalt-serve (arg)
   "Build, serve, and watch the project at the source dir.
@@ -58,7 +58,7 @@ Specify a prefix argument (c-u) as ARG to include drafts."
   (interactive "P")
   (when (cobalt--executable-exists-p)
     (if cobalt--serve-process
-	(message "Serve process already running!")
+	(cobalt--log "Serve process already running!")
       (when (not cobalt--current-site)
 	(cobalt-change-current-site))
       (let* ((default-directory cobalt--current-site))
@@ -70,8 +70,8 @@ Specify a prefix argument (c-u) as ARG to include drafts."
 						       "--drafts"
 						     "--no-drafts")))
 	(if (not cobalt--serve-process)
-	    (message "Error in running: cobalt serve")
-	  (message "Serve process is now running."))))))
+	    (cobalt--log "Error in running: cobalt serve")
+	  (cobalt--log "Serve process is now running."))))))
 
 (defun cobalt-build (arg)
   "Builds the current site.
@@ -106,10 +106,10 @@ Specify a prefix argument (c-u) as ARG to include drafts."
   (interactive)
   (when (cobalt--executable-exists-p)
     (if (not cobalt--serve-process)
-	(message "No serve process is currently running! Call cobalt-serve first!")
+	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
       (let* ((post-path (concat (car (butlast (split-string (buffer-name) "\\."))) ".html"))
 	     (full-url (concat "http://127.0.0.1:3000/posts/" post-path)))
-	(message "Previewing post: %s" full-url)
+	(cobalt--log (concat "Previewing post: " full-url))
 	(browse-url full-url)))))
 
 (defun cobalt-preview-site ()
@@ -117,7 +117,7 @@ Specify a prefix argument (c-u) as ARG to include drafts."
   (interactive)
   (when (cobalt--executable-exists-p)
     (if (not cobalt--serve-process)
-	(message "No serve process is currently running! Call cobalt-serve first!")
+	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
       (browse-url "http://127.0.0.1:3000"))))
 
 
@@ -133,14 +133,14 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
       (apply 'call-process (executable-find "cobalt") nil cobalt-log-buffer-name nil (list "new" "-f" posts-directory post-title))
       (when open-file-on-success
 	(if (not (file-exists-p (concat default-directory posts-directory post-file-name ".md")))
-	    (message "Could not find file: %s." (concat default-directory posts-directory post-file-name ".md"))
+	    (cobalt--log (concat "Could not find file: " default-directory posts-directory post-file-name ".md"))
 	  (find-file (concat default-directory posts-directory post-file-name ".md")))))))
 
 (defun cobalt--executable-exists-p ()
   "Check if cobalt is installed.  Otherwise it prints a message."
   (if (executable-find "cobalt")
       t
-    (message "Cobalt cannot be found in the system.")
+    (cobalt--log "Cobalt cannot be found in the system.")
     nil))
 
 (defun cobalt--convert-title-to-file-name (post-title)
@@ -152,6 +152,16 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
 							       (replace-regexp-in-string "[^A-Za-z0-9]"
 											 "-"
 											 post-title)))))
+
+(defun cobalt--log (str)
+  "Internal logger that logs STR to messages and the cobalt log buffer."
+  (message "[cobalt.el] %s" str)
+  (let ((log-buffer (get-buffer-create cobalt-log-buffer-name)))
+    (with-current-buffer log-buffer
+      (goto-char (point-max))
+      (open-line 1)
+      (forward-line 1)
+      (insert (concat "[cobalt.el] " str)))))
 
 (provide 'cobalt)
 ;;; cobalt.el ends here
