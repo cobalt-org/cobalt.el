@@ -7,7 +7,6 @@
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
-;; - Should be able to set which port to serve from.
 ;; - Fix error with cobalt-build when cobalt--current-site is nil.
 
 (defcustom cobalt-site-paths nil
@@ -19,6 +18,11 @@
   "Name of the log buffer for cobalt process output."
   :group 'cobalt
   :type 'string)
+
+(defcustom cobalt-serve-port 3000
+  "The port to serve the site on."
+  :group 'cobalt
+  :type 'number)
 
 (defvar cobalt--serve-process nil
   "Use to save cobalt serve process is so it can be killed in the future.")
@@ -68,7 +72,9 @@ Specify a prefix argument (c-u) as ARG to include drafts."
 						   "serve"
 						   (if (equal arg '(4))
 						       "--drafts"
-						     "--no-drafts")))
+						     "--no-drafts")
+						   "--port"
+						   (number-to-string cobalt-serve-port)))
 	(if (not cobalt--serve-process)
 	    (cobalt--log "Error in running: cobalt serve")
 	  (cobalt--log "Serve process is now running."))))))
