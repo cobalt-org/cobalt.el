@@ -11,7 +11,7 @@
 ;; - Fix error with cobalt-build when cobalt--current-site is nil.
 
 (defcustom cobalt-site-paths nil
-  "List of sites."
+  "Variable that holds a list of cobalt sites."
   :group 'cobalt
   :type 'sexp)
 
@@ -63,9 +63,10 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
     (when cobalt--serve-process
       (cobalt-serve-kill)
       (cobalt--log (concat "Server killed for " cobalt--current-site)))
-    (if (and cobalt-site-paths (> (length cobalt-site-paths) 0) )
-	(setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t))
-      (cobalt--log "cobalt-site-paths is empty! Set it first."))))
+    (if (not (and cobalt-site-paths (> (length cobalt-site-paths) 0) ))
+	(cobalt--log "cobalt-site-paths is empty! Set it first.")
+      (setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t))
+      (cobalt--log (concat "Current cobalt site set to " cobalt--current-site)))))
 
 (defun cobalt-serve (arg)
   "Build, serve, and watch the project at the source dir.
@@ -90,6 +91,22 @@ Specify a prefix argument (c-u) as ARG to include drafts."
 	    (cobalt--log "Error in running: cobalt serve")
 	  (cobalt--log "Serve process is now running."))))))
 
+(defun cobalt-serve-kill ()
+  "Kill the cobalt serve process, if existing."
+  (interactive)
+  (when (cobalt--executable-exists-p)
+    (when cobalt--serve-process
+      (kill-process cobalt--serve-process))
+    (setq cobalt--serve-process nil)))
+
+(defun cobalt-preview-site ()
+  "Preview the site."
+  (interactive)
+  (when (cobalt--executable-exists-p)
+    (if (not cobalt--serve-process)
+	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
+      (browse-url "http://127.0.0.1:3000"))))
+
 (defun cobalt-build (arg)
   "Builds the current site.
 Specify a prefix argument (c-u) as ARG to include drafts."
@@ -105,38 +122,10 @@ Specify a prefix argument (c-u) as ARG to include drafts."
 			"--drafts"
 		      "--no-drafts")))))
 
-(defun cobalt-serve-kill ()
-  "Kill the cobalt serve process, if existing."
-  (interactive)
-  (when (cobalt--executable-exists-p)
-    (when cobalt--serve-process
-      (kill-process cobalt--serve-process))
-    (setq cobalt--serve-process nil)))
-
 (defun cobalt-new-post (post-title)
   "Ask for POST-TITLE and create a new post."
   (interactive "sWhat is the title of the post? ")
   (cobalt--new-post-with-title post-title t))
-
-(defun cobalt-preview-current-post ()
-  "Opens the current buffer."
-  (interactive)
-  (when (cobalt--executable-exists-p)
-    (if (not cobalt--serve-process)
-	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
-      (let* ((post-path (concat (car (butlast (split-string (buffer-name) "\\."))) ".html"))
-	     (full-url (concat "http://127.0.0.1:3000/posts/" post-path)))
-	(cobalt--log (concat "Previewing post: " full-url))
-	(browse-url full-url)))))
-
-(defun cobalt-preview-site ()
-  "Preview the site."
-  (interactive)
-  (when (cobalt--executable-exists-p)
-    (if (not cobalt--serve-process)
-	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
-      (browse-url "http://127.0.0.1:3000"))))
-
 
 (defun cobalt--new-post-with-title (post-title open-file-on-success)
   "Create a new post with POST-TITLE.
@@ -157,6 +146,17 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
 	(if (not (file-exists-p (concat default-directory posts-directory post-file-name ".md")))
 	    (cobalt--log (concat "Could not find file: " default-directory posts-directory post-file-name ".md"))
 	  (find-file (concat default-directory posts-directory post-file-name ".md")))))))
+
+(defun cobalt-preview-current-post ()
+  "Opens the current buffer."
+  (interactive)
+  (when (cobalt--executable-exists-p)
+    (if (not cobalt--serve-process)
+	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
+      (let* ((post-path (concat (car (butlast (split-string (buffer-name) "\\."))) ".html"))
+	     (full-url (concat "http://127.0.0.1:3000/posts/" post-path)))
+	(cobalt--log (concat "Previewing post: " full-url))
+	(browse-url full-url)))))
 
 (defun cobalt--executable-exists-p ()
   "Check if cobalt is installed.  Otherwise it prints a message."
