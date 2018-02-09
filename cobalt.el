@@ -4,6 +4,7 @@
 ;;; Code:
 
 ;;; Todo:
+;; - Get the posts directory from the _cobalt.yml file.
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
@@ -43,6 +44,16 @@
 			   nil
 			   command-args))
     (pop-to-buffer cobalt-log-buffer-name)))
+
+(defun cobalt-init (args)
+  "Create a new cobalt site at the given path indicated by ARGS."
+  (interactive "DDirectory to create site: ")
+  (apply 'call-process
+	 (executable-find "cobalt")
+	 nil
+	 cobalt-log-buffer-name
+	 nil
+	 (list "init" args)))
 
 (defun cobalt-change-current-site ()
   "Show a selection to switch current site.
@@ -136,7 +147,12 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
     (let ((default-directory cobalt--current-site)
 	  (posts-directory "posts/")
 	  (post-file-name (cobalt--convert-title-to-file-name post-title)))
-      (apply 'call-process (executable-find "cobalt") nil cobalt-log-buffer-name nil (list "new" "-f" posts-directory post-title))
+      (apply 'call-process
+	     (executable-find "cobalt")
+	     nil
+	     cobalt-log-buffer-name
+	     nil
+	     (list "new" "-f" posts-directory post-title))
       (when open-file-on-success
 	(if (not (file-exists-p (concat default-directory posts-directory post-file-name ".md")))
 	    (cobalt--log (concat "Could not find file: " default-directory posts-directory post-file-name ".md"))
