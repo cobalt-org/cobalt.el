@@ -89,7 +89,10 @@ Specify a prefix argument (c-u) as ARG to include drafts."
 						   (number-to-string cobalt-serve-port)))
 	(if (not cobalt--serve-process)
 	    (cobalt--log "Error in running: cobalt serve")
-	  (cobalt--log "Serve process is now running."))))))
+	  (cobalt--log (concat "Serve process is now running. "
+			       (if (equal arg '(4))
+				   "Drafts included."
+				 "Drafts NOT included."))))))))
 
 (defun cobalt-serve-kill ()
   "Kill the cobalt serve process, if existing."
