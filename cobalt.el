@@ -4,11 +4,13 @@
 ;;; Code:
 
 ;;; Todo:
+;; - Create cobalt-publish post.
 ;; - Get the posts directory from the _cobalt.yml file.
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
 ;; - Fix error with cobalt-build when cobalt--current-site is nil.
+;; - Add a license file.
 
 (defcustom cobalt-site-paths nil
   "Variable that holds a list of cobalt sites."
@@ -31,7 +33,7 @@
 (defvar cobalt--current-site nil
   "The current site to run cobalt commands on.")
 
-(defun cobalt-comand (args)
+(defun cobalt-command (args)
   "Run specified cobalt command with ARGS at the current folder of the specified site."
   (interactive "scobalt ")
   (when (cobalt--executable-exists-p)
@@ -123,7 +125,11 @@ Specify a prefix argument (c-u) as ARG to include drafts."
 		    "build"
 		    (if (equal arg '(4))
 			"--drafts"
-		      "--no-drafts")))))
+		      "--no-drafts")))
+    (cobalt--log (concat "Site built successfully. "
+			(if (equal arg '(4))
+			    "Drafts included."
+			  "Drafts NOT included.")))))
 
 (defun cobalt-new-post (post-title)
   "Ask for POST-TITLE and create a new post."
