@@ -4,7 +4,8 @@
 ;;; Code:
 
 ;;; Todo:
-;; - Create cobalt-publish post.
+;; - Create a test for cobalt-publish.
+;; - Create function that checks if the current buffer is a valid post.
 ;; - Get the posts directory from the _cobalt.yml file.
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
@@ -157,7 +158,7 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
 	  (find-file (concat default-directory posts-directory post-file-name ".md")))))))
 
 (defun cobalt-preview-current-post ()
-  "Opens the current buffer."
+  "Opens the current post buffer."
   (interactive)
   (when (cobalt--executable-exists-p)
     (if (not cobalt--serve-process)
@@ -166,6 +167,20 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
 	     (full-url (concat "http://127.0.0.1:3000/posts/" post-path)))
 	(cobalt--log (concat "Previewing post: " full-url))
 	(browse-url full-url)))))
+
+(defun cobalt-publish ()
+  "Publishes the current post buffer."
+  (interactive)
+  (when (cobalt--executable-exists-p)
+    (apply 'call-process
+	   (executable-find "cobalt")
+	   nil
+	   cobalt-log-buffer-name
+	   nil
+	   (list "publish" (buffer-name)))
+    (cobalt--log "Successfully published the post")
+    ))
+  
 
 (defun cobalt--executable-exists-p ()
   "Check if cobalt is installed.  Otherwise it prints a message."
