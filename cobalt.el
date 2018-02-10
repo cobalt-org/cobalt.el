@@ -178,7 +178,7 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
 	   cobalt-log-buffer-name
 	   nil
 	   (list "publish" (buffer-name)))
-    (cobalt--log "Successfully published the post")
+    (cobalt--log (concat "Successfully published the post:" (buffer-name)))
     ))
   
 

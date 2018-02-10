@@ -10,7 +10,7 @@
 (require 'f)
 
 (ert-deftest t-cobalt-version-test ()
-  (should (equal (shell-command-to-string "cobalt -V") "Cobalt 0.11.1\n") ))
+  (should (equal (shell-command-to-string "cobalt -V") "Cobalt 0.11.1\n")))
 
 (ert-deftest t-cobalt-serve ()
   (within-sandbox
@@ -27,7 +27,7 @@
      (cobalt-serve-kill)
      (should-not cobalt--serve-process))))
 
-(ert-deftest t-cobalt-new-post ()
+(ert-deftest t-cobalt-new-post-and-publish ()
   (within-sandbox
    (let ((test-blog-path (concat cobalt-sandbox-path "/test-blog/")))
      (unless (f-exists? test-blog-path)
@@ -36,11 +36,21 @@
        (f-mkdir (concat test-blog-path "posts/") ))
 
      (let* ((cobalt-site-paths (list test-blog-path))
-	    (cobalt--current-site (car cobalt-site-paths)))
+	    (cobalt--current-site (car cobalt-site-paths))
+	    (full-post-path (concat test-blog-path "posts/this-is-a-test.md"))
+	    (revert-without-query '(".*")))
        (cobalt--new-post-with-title "This is a test" nil)
-       (should (f-exists? (concat test-blog-path "posts/this-is-a-test.md"))))
-     )
-   ))
+       (should (f-exists? full-post-path))
+
+       (with-temp-buffer
+	 (find-file full-post-path)
+	 (goto-char (point-min))
+	 (should (search-forward "is_draft: true" nil t))
+	 (cobalt-publish))
+       (with-temp-buffer
+	 (find-file full-post-path)
+	 (goto-char (point-min))
+	 (should (search-forward "is_draft: false" nil t)))))))
 
 (ert-deftest t-cobalt-convert-title-to-file-name ()
   (should (equal (cobalt--convert-title-to-file-name "This is a test") "this-is-a-test"))
