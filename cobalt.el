@@ -4,7 +4,6 @@
 ;;; Code:
 
 ;;; Todo:
-;; - Create a test for cobalt-publish.
 ;; - Create function that checks if the current buffer is a valid post.
 ;; - Get the posts directory from the _cobalt.yml file.
 ;; - Only preview a buffer if it is a valid post.
