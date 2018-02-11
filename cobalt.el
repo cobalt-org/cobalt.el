@@ -201,7 +201,7 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
     (if (not cobalt--serve-process)
 	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
       (let* ((post-path (concat (car (butlast (split-string (buffer-name) "\\."))) ".html"))
-	     (full-url (concat "http://127.0.0.1:3000" (cobalt--get-posts-directory) "/" post-path)))
+	     (full-url (concat "http://127.0.0.1:3000/" (cobalt--get-posts-directory) "/" post-path)))
 	(cobalt--log (concat "Previewing post: " full-url))
 	(browse-url full-url)))))
 
