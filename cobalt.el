@@ -37,8 +37,8 @@
 
 ;;; Todo:
 
+;; - Use user-error for errors.
 ;; - Create function that checks if the current buffer is a valid post.
-;; - Get the posts directory from the _cobalt.yml file.
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
@@ -85,12 +85,16 @@
 (defun cobalt-init (args)
   "Create a new cobalt site at the given path indicated by ARGS."
   (interactive "DDirectory to create site: ")
+  (cobalt--init args))
+
+(defun cobalt--init (directory)
+  "Create a new cobalt site at the given DIRECTORY."
   (apply 'call-process
 	 (executable-find "cobalt")
 	 nil
 	 cobalt-log-buffer-name
 	 nil
-	 (list "init" args)))
+	 (list "init" directory)))
 
 (defun cobalt-change-current-site ()
   "Show a selection to switch current site.
@@ -178,18 +182,17 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
     (when (not cobalt--current-site)
       (cobalt-change-current-site))
     (let ((default-directory cobalt--current-site)
-	  (posts-directory "posts/")
 	  (post-file-name (cobalt--convert-title-to-file-name post-title)))
       (apply 'call-process
 	     (executable-find "cobalt")
 	     nil
 	     cobalt-log-buffer-name
 	     nil
-	     (list "new" "-f" posts-directory post-title))
+	     (list "new" "-f" (cobalt--get-posts-directory) post-title))
       (when open-file-on-success
-	(if (not (file-exists-p (concat default-directory posts-directory post-file-name ".md")))
-	    (cobalt--log (concat "Could not find file: " default-directory posts-directory post-file-name ".md"))
-	  (find-file (concat default-directory posts-directory post-file-name ".md")))))))
+	(if (not (file-exists-p (concat default-directory (cobalt--get-posts-directory) post-file-name ".md")))
+	    (cobalt--log (concat "Could not find file: " default-directory (cobalt--get-posts-directory) post-file-name ".md"))
+	  (find-file (concat default-directory (cobalt--get-posts-directory) post-file-name ".md")))))))
 
 (defun cobalt-preview-current-post ()
   "Opens the current post buffer."
@@ -198,7 +201,7 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
     (if (not cobalt--serve-process)
 	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
       (let* ((post-path (concat (car (butlast (split-string (buffer-name) "\\."))) ".html"))
-	     (full-url (concat "http://127.0.0.1:3000/posts/" post-path)))
+	     (full-url (concat "http://127.0.0.1:3000" (cobalt--get-posts-directory) "/" post-path)))
 	(cobalt--log (concat "Previewing post: " full-url))
 	(browse-url full-url)))))
 
@@ -222,6 +225,19 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
       t
     (cobalt--log "Cobalt cannot be found in the system.")
     nil))
+
+(defun cobalt--get-posts-directory ()
+  "Get the posts dir configuration from the current site's _cobalt.yml file.
+Returns \"posts\" if nothing is specified."
+  (with-temp-buffer
+    (insert-file-contents (concat cobalt--current-site "_cobalt.yml"))
+    (goto-char (point-min))
+    (if (not (search-forward "dir:" nil t))
+	"posts"
+      (let* ((start-pos (point))
+	     (end-pos (progn (move-end-of-line 1)
+			     (point))))
+	(replace-regexp-in-string " " "" (buffer-substring-no-properties start-pos end-pos))))))
 
 (defun cobalt--convert-title-to-file-name (post-title)
   "Convert the given POST-TITLE to a file name."

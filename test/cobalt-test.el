@@ -14,12 +14,12 @@
 
 (ert-deftest t-cobalt-serve ()
   (within-sandbox
-   (let* ((test-blog-path (concat cobalt-sandbox-path "/test-blog/"))
-	  (cobalt-site-paths (list test-blog-path))
+   (let* ((test-site-path (concat cobalt-sandbox-path "/test-site/"))
+	  (cobalt-site-paths (list test-site-path))
 	  (cobalt--current-site (car cobalt-site-paths))
 	  (cobalt--serve-process nil))
-     (unless (f-exists? test-blog-path)
-       (f-mkdir test-blog-path))
+     (unless (f-exists? test-site-path)
+       (f-mkdir test-site-path))
      
      (should-not cobalt--serve-process)
      (cobalt-serve '(4))
@@ -27,18 +27,28 @@
      (cobalt-serve-kill)
      (should-not cobalt--serve-process))))
 
-(ert-deftest t-cobalt-new-post-and-publish ()
+(ert-deftest t-cobalt-init ()
   (within-sandbox
-   (let ((test-blog-path (concat cobalt-sandbox-path "/test-blog/")))
-     (unless (f-exists? test-blog-path)
-       (f-mkdir test-blog-path))
-     (unless (f-exists? (concat test-blog-path "posts/"))
-       (f-mkdir (concat test-blog-path "posts/") ))
+   (let ((test-site-path (concat cobalt-sandbox-path "/test-site/")))
+     (should-not (f-exists? (concat test-site-path "_cobalt.yml")))
+     (cobalt--init test-site-path)
+     (should (f-exists? (concat test-site-path "_cobalt.yml"))))))
 
-     (let* ((cobalt-site-paths (list test-blog-path))
+(ert-deftest t-cobalt-new-post-and-publish ()
+  (within-sandbox			;
+   (let ((test-site-path (concat cobalt-sandbox-path "/test-site/")))
+     (unless (f-exists? test-site-path)
+       (f-mkdir test-site-path))
+     (unless (f-exists? (concat test-site-path "posts/"))
+       (f-mkdir (concat test-site-path "posts/") ))
+
+     (let* ((cobalt-site-paths (list test-site-path))
 	    (cobalt--current-site (car cobalt-site-paths))
-	    (full-post-path (concat test-blog-path "posts/this-is-a-test.md"))
+	    (full-post-path (concat test-site-path "posts/this-is-a-test.md"))
 	    (revert-without-query '(".*")))
+       
+       (cobalt--init test-site-path)
+       
        (cobalt--new-post-with-title "This is a test" nil)
        (should (f-exists? full-post-path))
 
