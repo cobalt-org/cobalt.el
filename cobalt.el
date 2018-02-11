@@ -38,9 +38,13 @@
 ;;; Todo:
 
 ;; - Use user-error for errors.
+;; - Create a cobalt-rename-post function.
+;; - Create a cobalt-delete-post function.
+;; - Add cobalt-change-current-site to the Readme.
 ;; - Create function that checks if the current buffer is a valid post.
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
+;; - cobalt-preview-post should get the path according to the post buffer.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
 ;; - Fix error with cobalt-build when cobalt--current-site is nil.
 ;; - Add a license file.
@@ -190,9 +194,9 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
 	     nil
 	     (list "new" "-f" (cobalt--get-posts-directory) post-title))
       (when open-file-on-success
-	(if (not (file-exists-p (concat default-directory (cobalt--get-posts-directory) post-file-name ".md")))
-	    (cobalt--log (concat "Could not find file: " default-directory (cobalt--get-posts-directory) post-file-name ".md"))
-	  (find-file (concat default-directory (cobalt--get-posts-directory) post-file-name ".md")))))))
+	(if (not (file-exists-p (concat default-directory (cobalt--get-posts-directory) "/" post-file-name ".md")))
+	    (cobalt--log (concat "Could not find file: " default-directory (cobalt--get-posts-directory) "/" post-file-name ".md"))
+	  (find-file (concat default-directory (cobalt--get-posts-directory) "/" post-file-name ".md")))))))
 
 (defun cobalt-preview-current-post ()
   "Opens the current post buffer."
