@@ -62,6 +62,10 @@
 	 (goto-char (point-min))
 	 (should (search-forward "is_draft: false" nil t)))))))
 
+(ert-deftest t-cobalt-utils ()
+  (should (equal (cobalt--check-fix-site-path "test/blog/site") "test/blog/site/"))
+  (should (equal (cobalt--check-fix-site-path "test/blog/site/") "test/blog/site/")))
+
 (ert-deftest t-cobalt-convert-title-to-file-name ()
   (should (equal (cobalt--convert-title-to-file-name "This is a test") "this-is-a-test"))
   (should (equal (cobalt--convert-title-to-file-name "This is a test.") "this-is-a-test"))

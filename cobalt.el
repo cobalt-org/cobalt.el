@@ -110,7 +110,7 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
       (cobalt--log (concat "Server killed for " cobalt--current-site)))
     (if (not (and cobalt-site-paths (> (length cobalt-site-paths) 0) ))
 	(cobalt--log "cobalt-site-paths is empty! Set it first.")
-      (setq cobalt--current-site (completing-read "Select site to use as current: " cobalt-site-paths nil t))
+      (setq cobalt--current-site (cobalt--check-fix-site-path (completing-read "Select site to use as current: " cobalt-site-paths nil t)))
       (cobalt--log (concat "Current cobalt site set to " cobalt--current-site)))))
 
 (defun cobalt-serve (arg)
@@ -143,9 +143,10 @@ Specify a prefix argument (c-u) as ARG to include drafts."
   "Kill the cobalt serve process, if existing."
   (interactive)
   (when (cobalt--executable-exists-p)
-    (when cobalt--serve-process
-      (kill-process cobalt--serve-process))
-    (setq cobalt--serve-process nil)))
+    (let ((serve-process cobalt--serve-process))
+      (setq cobalt--serve-process nil)
+      (when serve-process
+	(kill-process serve-process)))))
 
 (defun cobalt-preview-site ()
   "Preview the site."
@@ -242,6 +243,14 @@ Returns \"posts\" if nothing is specified."
 	     (end-pos (progn (move-end-of-line 1)
 			     (point))))
 	(replace-regexp-in-string " " "" (buffer-substring-no-properties start-pos end-pos))))))
+
+(defun cobalt--check-fix-site-path (site-path)
+  "Add a trailing slash \"\\\" to the given SITE-PATH, if needed."
+  (if (not site-path)
+      nil
+    (if (string= (substring site-path (- (length site-path) 1)) "/")
+	site-path
+      (concat site-path "/"))))
 
 (defun cobalt--convert-title-to-file-name (post-title)
   "Convert the given POST-TITLE to a file name."
