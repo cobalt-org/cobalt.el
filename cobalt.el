@@ -3,7 +3,7 @@
 ;; Copyright (C) 2018 Juan Karlo Lidudine
 
 ;; Author: Juan Karlo Licudine <accidentalrebel@gmail.com>
-;; URL: https://github.com/accidentalrebel/cobalt.el
+;; URL: https://github.com/cobalt-org/cobalt.el
 ;; Version: 1.0.0
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "24"))
