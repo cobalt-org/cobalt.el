@@ -12,8 +12,8 @@
 
 ;;; Commentary:
 
-;; Cobalt.el is an Emacs interface for Cobalt.rss, a static site
-;; generator written in Rust.
+;; Cobalt.el is an Emacs interface for Cobalt.rs, a static site
+;; generator written in Rust
 
 ;; The package provides simple-to-use Emacs commands for easy site
 ;; generation and post management.
@@ -87,6 +87,7 @@
 			   command-args))
     (pop-to-buffer cobalt-log-buffer-name)))
 
+;;;###autoload
 (defun cobalt-init (args)
   "Create a new cobalt site at the given path indicated by ARGS."
   (interactive "DDirectory to create site: ")
@@ -101,6 +102,7 @@
 	 nil
 	 (list "init" directory)))
 
+;;;###autoload
 (defun cobalt-change-current-site ()
   "Show a selection to switch current site.
 Kills an exiting server process.  User should run ‘cobalt-serve’ again for the newly switch site."
