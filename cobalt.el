@@ -36,9 +36,8 @@
 ;; Boston, MA 02110-1301, USA.
 
 ;;; Todo:
+;;;; Bugs:
 
-;; - Create a cobalt-rename-post function.
-;; - Create a cobalt-delete-post function.
 ;; - Add cobalt-change-current-site to the Readme.
 ;; - Create function that checks if the current buffer is a valid post.
 ;; - Only preview a buffer if it is a valid post.
@@ -46,6 +45,10 @@
 ;; - cobalt-preview-post should get the path according to the post buffer.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
 ;; - Fix error with cobalt-build when cobalt--current-site is nil.
+
+;;;; Features:
+;; - Create a cobalt-rename-post function.
+;; - Create a cobalt-delete-post function.
 
 ;;; Code:
 
@@ -100,7 +103,7 @@
 
 (defun cobalt-change-current-site ()
   "Show a selection to switch current site.
-Kills an exiting server process.  User should run cobalt-serve again for the newly switch site."
+Kills an exiting server process.  User should run ‘cobalt-serve’ again for the newly switch site."
   (interactive)
   (when (cobalt--executable-exists-p)
     (when cobalt--serve-process
