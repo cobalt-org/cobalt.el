@@ -37,7 +37,6 @@
 
 ;;; Todo:
 
-;; - Use user-error for errors.
 ;; - Create a cobalt-rename-post function.
 ;; - Create a cobalt-delete-post function.
 ;; - Add cobalt-change-current-site to the Readme.
@@ -47,7 +46,6 @@
 ;; - cobalt-preview-post should get the path according to the post buffer.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
 ;; - Fix error with cobalt-build when cobalt--current-site is nil.
-;; - Add a license file.
 
 ;;; Code:
 
@@ -109,7 +107,7 @@ Kills an exiting server process.  User should run cobalt-serve again for the new
       (cobalt-serve-kill)
       (cobalt--log (concat "Server killed for " cobalt--current-site)))
     (if (not (and cobalt-site-paths (> (length cobalt-site-paths) 0) ))
-	(cobalt--log "cobalt-site-paths is empty! Set it first.")
+	(cobalt--log "cobalt-site-paths is empty! Set it first." t)
       (setq cobalt--current-site (cobalt--check-fix-site-path (completing-read "Select site to use as current: " cobalt-site-paths nil t)))
       (cobalt--log (concat "Current cobalt site set to " cobalt--current-site)))))
 
@@ -119,7 +117,7 @@ Specify a prefix argument (c-u) as ARG to include drafts."
   (interactive "P")
   (when (cobalt--executable-exists-p)
     (if cobalt--serve-process
-	(cobalt--log "Serve process already running!")
+	(cobalt--log "Serve process already running!" t)
       (when (not cobalt--current-site)
 	(cobalt-change-current-site))
       (let* ((default-directory cobalt--current-site))
@@ -133,7 +131,7 @@ Specify a prefix argument (c-u) as ARG to include drafts."
 						   "--port"
 						   (number-to-string cobalt-serve-port)))
 	(if (not cobalt--serve-process)
-	    (cobalt--log "Error in running: cobalt serve")
+	    (cobalt--log "Problem running cobalt serve" t)
 	  (cobalt--log (concat "Serve process is now running. "
 			       (if (equal arg '(4))
 				   "Drafts included."
@@ -153,7 +151,7 @@ Specify a prefix argument (c-u) as ARG to include drafts."
   (interactive)
   (when (cobalt--executable-exists-p)
     (if (not cobalt--serve-process)
-	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
+	(cobalt--log "No serve process is currently running! Call cobalt-serve first!" t)
       (browse-url "http://127.0.0.1:3000"))))
 
 (defun cobalt-build (arg)
@@ -196,7 +194,7 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
 	     (list "new" "-f" (cobalt--get-posts-directory) post-title))
       (when open-file-on-success
 	(if (not (file-exists-p (concat default-directory (cobalt--get-posts-directory) "/" post-file-name ".md")))
-	    (cobalt--log (concat "Could not find file: " default-directory (cobalt--get-posts-directory) "/" post-file-name ".md"))
+	    (cobalt--log (concat "Could not find file: " default-directory (cobalt--get-posts-directory) "/" post-file-name ".md") t)
 	  (find-file (concat default-directory (cobalt--get-posts-directory) "/" post-file-name ".md")))))))
 
 (defun cobalt-preview-current-post ()
@@ -204,7 +202,7 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
   (interactive)
   (when (cobalt--executable-exists-p)
     (if (not cobalt--serve-process)
-	(cobalt--log "No serve process is currently running! Call cobalt-serve first!")
+	(cobalt--log "No serve process is currently running! Call cobalt-serve first!" t)
       (let* ((post-path (concat (car (butlast (split-string (buffer-name) "\\."))) ".html"))
 	     (full-url (concat "http://127.0.0.1:3000/" (cobalt--get-posts-directory) "/" post-path)))
 	(cobalt--log (concat "Previewing post: " full-url))
@@ -228,7 +226,7 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
   "Check if cobalt is installed.  Otherwise it prints a message."
   (if (executable-find "cobalt")
       t
-    (cobalt--log "Cobalt cannot be found in the system.")
+    (cobalt--log "Cobalt cannot be found in the system." t)
     nil))
 
 (defun cobalt--get-posts-directory ()
@@ -262,15 +260,21 @@ Returns \"posts\" if nothing is specified."
 											 "-"
 											 post-title)))))
 
-(defun cobalt--log (str)
-  "Internal logger that logs STR to messages and the cobalt log buffer."
-  (message "[cobalt.el] %s" str)
+(defun cobalt--log (str &optional is-error)
+  "Internal logger that logs STR to messages and the cobalt log buffer.
+If &OPTIONAL IS-ERROR is non-nil then it will add a \"Error!\" before the error string."
   (let ((log-buffer (get-buffer-create cobalt-log-buffer-name)))
+    (if is-error
+	(message "Error! %s" str)
+      (message "%s" str))
+
     (with-current-buffer log-buffer
       (goto-char (point-max))
       (open-line 1)
       (forward-line 1)
-      (insert (concat "[cobalt.el] " str)))))
+      (if is-error
+	  (insert (concat "[cobalt.el] Error! " str))
+	(insert (concat "[cobalt.el] " str))))))
 
 (provide 'cobalt)
 ;;; cobalt.el ends here
