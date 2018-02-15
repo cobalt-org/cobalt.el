@@ -1,5 +1,8 @@
 # Cobalt.el
-[![Build Status](https://travis-ci.org/cobalt-org/cobalt.el.svg?branch=master)](https://travis-ci.org/cobalt-org/cobalt.el)
+[![Build Status](https://travis-ci.org/cobalt-org/cobalt.el.svg)](https://travis-ci.org/cobalt-org/cobalt.el)
+[![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
+[![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cobalt-org/cobalt.rs)
+
 
 Cobalt.el is an Emacs interface for [Cobalt.rs](https://github.com/cobalt-org/cobalt.rs), a static site generator written in Rust.
 
