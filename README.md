@@ -14,6 +14,10 @@ Currently, the package can only be downloaded from GitHub.
 
 Will be submitting to [Melpa](https://github.com/melpa/melpa) as soon as the package is ready. 
 
+## Dependencies
+
+The latest version of [Cobalt.rs](http://cobalt-org.github.io/getting-started/) should be installed on your machine and should be found in your Emacs' `exec-path`.
+
 ## Configuration
 
 Create a cobalt site by calling `M-x cobalt-init`. This will ask you for a directory to create the new site in.
@@ -25,10 +29,6 @@ Add the path of the newly created site to `cobalt-site-paths` as shown below:
 ```
 
 Finally, call `M-x cobalt-change-current-site` to set the current site. This is the directory where all cobalt.el commands will run on.
-
-## Dependencies
-
-The latest version of [Cobalt.rs](http://cobalt-org.github.io/getting-started/) should be installed on your machine and can be found in your Emacs' `exec-path`.
 
 ## Usage
 
