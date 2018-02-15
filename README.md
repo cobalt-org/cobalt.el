@@ -26,6 +26,10 @@ Add the path of the newly created site to `cobalt-site-paths` as shown below:
 
 Finally, call `M-x cobalt-change-current-site` to set the current site. This is the directory where all cobalt.el commands will run on.
 
+## Dependencies
+
+The latest version of [Cobalt.rs](http://cobalt-org.github.io/getting-started/) should be installed on your machine and can be found in your Emacs' `exec-path`.
+
 ## Usage
 
 ### Previewing Site
