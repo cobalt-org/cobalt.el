@@ -1,4 +1,4 @@
-;;; cobalt.el --- Summary   -*- lexical-binding: t -*-
+;;; cobalt.el --- An Emacs interface for Cobalt.rs   -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Juan Karlo Lidudine
 
@@ -51,6 +51,10 @@
 ;; - Create a cobalt-delete-post function.
 
 ;;; Code:
+
+(defgroup cobalt nil
+  "Customization for cobalt.el"
+  :group 'convenience)
 
 (defcustom cobalt-site-paths nil
   "Variable that holds a list of cobalt sites."
