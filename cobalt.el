@@ -1,4 +1,4 @@
-;;; cobalt.el --- An Emacs interface for Cobalt.rs   -*- lexical-binding: t -*-
+;;; cobalt.el --- Easily use the Cobalt.rs static site generator   -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018 Juan Karlo Lidudine
 
@@ -12,7 +12,7 @@
 
 ;;; Commentary:
 
-;; Cobalt.el is an Emacs interface for Cobalt.rs, a static site
+;; Cobalt.el is an interface for Cobalt.rs, a static site
 ;; generator written in Rust
 
 ;; The package provides simple-to-use Emacs commands for easy site
