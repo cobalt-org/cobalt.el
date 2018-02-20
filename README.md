@@ -1,5 +1,6 @@
 # Cobalt.el
 [![Build Status](https://travis-ci.org/cobalt-org/cobalt.el.svg)](https://travis-ci.org/cobalt-org/cobalt.el)
+[![MELPA](https://melpa.org/packages/cobalt-badge.svg)](https://melpa.org/#/cobalt) 
 [![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cobalt-org/cobalt.rs)
 
