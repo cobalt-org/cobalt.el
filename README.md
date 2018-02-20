@@ -9,15 +9,17 @@ Cobalt.el is an Emacs interface for [Cobalt.rs](https://github.com/cobalt-org/co
 
 The package provides simple-to-use Emacs commands for easy site generation and post management.
 
-## Installation
-
-Currently, the package can only be downloaded from GitHub. 
-
-Will be submitting to [Melpa](https://github.com/melpa/melpa) as soon as the package is ready. 
-
 ## Dependencies
 
 The latest version of [Cobalt.rs](http://cobalt-org.github.io/getting-started/) should be installed on your machine and should be found in your Emacs' `exec-path`.
+
+## Installation
+
+Download the package from [Melpa](https://melpa.org/#/cobalt) or by cloning this repository. Then add the following to your init file:
+
+```emacs-lisp
+(require 'cobalt)
+```
 
 ## Configuration
 
