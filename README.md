@@ -65,6 +65,10 @@ Publish the current post buffer by calling `M-x cobalt-publish-post`. It will up
 
 Build the site by calling `M-x cobalt-build`. This will generate the necessary files at the destination specified in the `_cobalt.yml` file.
 
+### Switching Sites
+
+You can switch to other sites you've set in `cobalt-site-paths` by calling `M-x cobalt-change-current-site`. All functions that are called will apply to the new site you switch to. Previously started `cobalt-serve-process` will also be killed so you'll have to call it again to start a new _serve process_.
+
 ## Contributing
 
 The package is still under development but issues and pull-requests are always welcome!

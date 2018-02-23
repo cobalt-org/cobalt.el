@@ -38,7 +38,6 @@
 ;;; Todo:
 ;;;; Bugs:
 
-;; - Add cobalt-change-current-site to the Readme.
 ;; - Create function that checks if the current buffer is a valid post.
 ;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
