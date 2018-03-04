@@ -39,7 +39,6 @@
 ;;;; Bugs:
 
 ;; - Create function that checks if the current buffer is a valid post.
-;; - Only preview a buffer if it is a valid post.
 ;; - If post is a draft, and cobalt-serve was not run with "--drafts", then don't allow previewing.
 ;; - cobalt-preview-post should get the path according to the post buffer.
 ;; - If start-process returns an error don't let it set cobalt--serve-process
@@ -48,6 +47,7 @@
 ;;;; Features:
 ;; - Create a cobalt-rename-post function.
 ;; - Create a cobalt-delete-post function.
+;; - Create a cobalt-open-post function.
 
 ;;; Code:
 
@@ -89,6 +89,10 @@
 			   nil
 			   command-args))
     (pop-to-buffer cobalt-log-buffer-name)))
+
+(define-minor-mode cobalt-post-mode
+  "Minor mode for cobalt posts."
+  :lighter " CobaltPost")
 
 ;;;###autoload
 (defun cobalt-init (args)
@@ -203,11 +207,14 @@ Specify OPEN-FILE-ON-SUCCESS if you want to open the file in a buffer if success
       (when open-file-on-success
 	(if (not (file-exists-p (concat default-directory (cobalt--get-posts-directory) "/" post-file-name ".md")))
 	    (cobalt--log (concat "Could not find file: " default-directory (cobalt--get-posts-directory) "/" post-file-name ".md") t)
-	  (find-file (concat default-directory (cobalt--get-posts-directory) "/" post-file-name ".md")))))))
+	  (find-file (concat default-directory (cobalt--get-posts-directory) "/" post-file-name ".md"))
+	  (cobalt-post-mode))))))
 
 (defun cobalt-preview-current-post ()
   "Opens the current post buffer."
   (interactive)
+  (when (not (bound-and-true-p cobalt-post-mode))
+    (error "Command should only be called inside a CobaltPost buffer"))
   (when (cobalt--executable-exists-p)
     (if (not cobalt--serve-process)
 	(cobalt--log "No serve process is currently running! Call cobalt-serve first!" t)
