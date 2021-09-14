@@ -28,7 +28,7 @@ Create a cobalt site by calling `M-x cobalt-init`. This will ask you for a direc
 Add the path of the newly created site to `cobalt-site-paths` as shown below:
 
 ```emacs-lisp
-(setq cobalt-site-paths '("~/path/to/cobalt/site/" "~/path/to/second/cobalt/site))
+(setq cobalt-site-paths '("~/path/to/cobalt/site/" "~/path/to/second/cobalt/site"))
 ```
 
 Finally, call `M-x cobalt-change-current-site` to set the current site. This is the directory where all cobalt.el commands will run on.
